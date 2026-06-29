@@ -1,13 +1,14 @@
 from typing import override
-from pygame import Vector2, Surface, draw
+from pygame import Vector2, Surface, draw, key
+import pygame
 import circleshape
-from constants import PLAYER_RADIUS, LINE_WIDTH
+from constants import PLAYER_RADIUS, LINE_WIDTH, PLAYER_TURN_SPEED
 
 class Player(circleshape.CircleShape):
 
     def __init__(self, x: float, y: float) -> None:
         super().__init__(x, y, PLAYER_RADIUS)
-        self.rotation: int = 0
+        self.rotation: float = 0
 
     def triangle(self) -> list[Vector2]:
         forward: Vector2 = Vector2(0,1).rotate(self.rotation)
@@ -23,4 +24,17 @@ class Player(circleshape.CircleShape):
         points: list[Vector2] = self.triangle()
         width: int = LINE_WIDTH
         draw.polygon(screen, color, points, width)
+
+    def rotate(self, dt: float) -> None:
+        self.rotation += PLAYER_TURN_SPEED * dt
+
+    @override
+    def update(self, dt: float) -> None:
+        keys: key.ScancodeWrapper = key.get_pressed()
+        
+        if keys[pygame.K_a]:
+            self.rotate(-dt)
+        if keys[pygame.K_d]:
+            self.rotate(dt)
+
 
